@@ -60,7 +60,11 @@ class MqttService
             ]]);
             $this->socket = stream_socket_client("tls://" . $this->address . ":" . $this->port, $errno, $errstr, 60, STREAM_CLIENT_CONNECT, $socketContext);
         } else {
-            $this->socket = stream_socket_client("tcp://" . $this->address . ":" . $this->port, $errno, $errstr, 60, STREAM_CLIENT_CONNECT);
+            if (strpos($this->address, "://") !== false) {
+                $this->socket = stream_socket_client($this->address . ":" . $this->port, $errno, $errstr, 60, STREAM_CLIENT_CONNECT);
+            } else {
+                $this->socket = stream_socket_client("tcp://" . $this->address . ":" . $this->port, $errno, $errstr, 60, STREAM_CLIENT_CONNECT);
+            }
         }
         if (!$this->socket ) {
             if($this->debug) error_log("stream_socket_create() $errno, $errstr \n");
